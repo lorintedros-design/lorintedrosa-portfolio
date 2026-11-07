@@ -195,7 +195,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
    <p class="intro">Hello! I'm Lorin Tedros A, a third-year B.Tech Computer Science and Engineering student passionate about Python development, Artificial Intelligence, and emerging technologies. I enjoy transforming ideas into practical applications through programming and AI-powered technologies.</p>
    <div class="cta">
     <a href="#projects" class="btn btn-primary">Explore My Projects</a>
-    <a href="resume.pdf" id="resumeBtn" class="btn" download="Lorin_Tedros_Resume.pdf">
+    <a href="#" id="resumeBtn" class="btn" download="Lorin_Tedros_Resume.pdf">
      <svg viewBox="0 0 24 24"><path d="M12 3v12l4-4 1.4 1.4L12 19.8 6.6 12.4 8 11l4 4V3zM4 19h16v2H4z"/></svg>Download My Resume</a>
    </div>
    <div class="socials">
@@ -490,10 +490,14 @@ const RESUME_B64="JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbn
  btn.addEventListener('click',async e=>{
   let dl=null;
   try{ if(window.claude&&claude.use) dl=await claude.use('downloads'); }catch(_){}
-  if(!dl) return; // no capability: normal link to resume.pdf
   e.preventDefault();
   const bin=Uint8Array.from(atob(RESUME_B64),c=>c.charCodeAt(0));
-  try{ await dl.save({filename:'Lorin_Tedros_Resume.pdf',data:bin}); }catch(_){}
+  if(dl){ try{ await dl.save({filename:'Lorin_Tedros_Resume.pdf',data:bin}); return; }catch(_){} }
+  // fallback: save the embedded PDF directly as a blob
+  const url=URL.createObjectURL(new Blob([bin],{type:'application/pdf'}));
+  const a=document.createElement('a'); a.href=url; a.download='Lorin_Tedros_Resume.pdf';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
  });
 })();
 </script>
